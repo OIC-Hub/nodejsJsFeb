@@ -1,37 +1,22 @@
- const pageroute= (req, res)=>{
-    if(req.url == '/post'){
-        res.write('<!DOCTYPE html');
-        res.write('<html>')
-        res.write(`
-         <head><title>Shooping::Post</title></head>
-          <body>
-          <h2>Post Product</h2>
-          <form action='/add-product' method='POST'>
-          <input type="text" name="product">
-          <input type="submit" value="Post">
-          </form>
-          </body>
-        `)
-       return  res.end()
-    }
-    if(req.url =='/add-product' && req.method =='POST'){
+const express = require('express');
+const fs = require('fs')
+const path = require('path')
+  const router = express.Router();
 
-        fs.writeFileSync('data.text', 'submitted')
-        res.setHeader('Location', '/');
-        return res.end();
-     
-    }
-    if(req.url == '/'){
-    res.write('<!DOCTYPE html');
-    res.write('<html>')
-    res.write(`
-      <head><title>Shooping::Post</title></head>
-      <body>
-      <h2>Shooping Home</h2>
-      </body>
-    `) 
-   return res.end()
-  }
-}
+router.get('/', (req, res, next) =>{
+ 
+ res.sendFile(path.join(__dirname, '../', 'views', 'index.html'));
 
-module.exports =pageroute;
+})
+router.get('/add-product', (req, res) =>{
+res.sendFile(path.join(__dirname, '../', 'views', 'add-product.html'))
+});
+router.post('/product', (req, res)=>{
+const products = [req.body]
+fs.writeFile('products.json', JSON.stringify(products), (err)=>{
+  if(err) throw "Unable to submit product to database"
+} )
+
+res.statusCode=301;
+res.redirect('/');
+});module.exports = router;
